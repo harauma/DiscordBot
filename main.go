@@ -62,10 +62,11 @@ func onMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	switch {
 	case strings.HasPrefix(m.Content, fmt.Sprintf("%s %s", BotName, HelloWorld)):
 		//Bot宛に!helloworld コマンドが実行された時
+		fmt.Println("Hello worldやで")
 		sendMessage(s, m.ChannelID, "Hello world！")
 
 	case strings.HasPrefix(m.Content, fmt.Sprintf("%s %s", BotName, ChannelVoiceJoin)):
-
+		fmt.Println("voicejoinやで")
 		//今いるサーバーのチャンネル情報の一覧を喋らせる処理を書いておきますね
 		c, err := s.State.Channel(m.ChannelID) //チャンネル取得
 		if err != nil {
@@ -85,7 +86,11 @@ func onMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		vcsession.AddHandler(onVoiceReceived) //音声受信時のイベントハンドラ
 
 	case strings.HasPrefix(m.Content, fmt.Sprintf("%s %s", BotName, ChannelVoiceLeave)):
+		fmt.Println("voiceleaveやで")
 		vcsession.Disconnect() //今いる通話チャンネルから抜ける
+
+	case strings.HasPrefix(m.Content, fmt.Sprintf("%s", BotName)):
+		sendMessage(s, m.ChannelID, strings.Trim(m.Content, BotName))
 	}
 }
 
