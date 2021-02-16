@@ -16,6 +16,8 @@ var (
 	BotName           = ""
 	Token             = ""
 	stopBot           = make(chan bool)
+	session           *discordgo.Session
+	channelId         = ""
 	vcsession         *discordgo.VoiceConnection
 	HelloWorld        = "!helloworld"
 	ChannelVoiceJoin  = "!vcjoin"
@@ -58,6 +60,8 @@ func main() {
 func onMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	fmt.Printf("%20s %20s %20s > %s\n", m.ChannelID, time.Now().Format(time.Stamp), m.Author.Username, m.Content)
+	session = s
+	channelId = m.ChannelID
 
 	switch {
 	case strings.HasPrefix(m.Content, fmt.Sprintf("%s %s", BotName, HelloWorld)):
@@ -96,7 +100,20 @@ func onMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 //メッセージを受信した時の、声の初めと終わりにPrintされるようだ
 func onVoiceReceived(vc *discordgo.VoiceConnection, vs *discordgo.VoiceSpeakingUpdate) {
+	c, err := session.State.Channel(channelId)
+	if err != nil {
+		log.Println("Error getting channel: ", err)
+		return
+	}
+	// for vs.Speaking {
+	member, err := session.GuildMember(c.GuildID, vs.UserID)
+	if err != nil {
+		log.Println("Error getting GuildMember: ", err)
+		return
+	}
+	sendMessage(session, channelId, member.User.Username+"さんミュートになっていません")
 	log.Print("しゃべったあああああ")
+	// }
 }
 
 //メッセージを送信する関数
