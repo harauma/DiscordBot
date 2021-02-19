@@ -112,6 +112,11 @@ func onVoiceReceived(vc *discordgo.VoiceConnection, vs *discordgo.VoiceSpeakingU
 		return
 	}
 	sendMessage(session, channelId, member.User.Username+"さんミュートになっていません")
+	err = session.GuildMemberMute(c.GuildID, vs.UserID, true)
+	if err != nil {
+		log.Println("Error mute member: ", err)
+		return
+	}
 	log.Print("しゃべったあああああ")
 	// }
 }
